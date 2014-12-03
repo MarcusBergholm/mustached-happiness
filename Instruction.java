@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 
 /**
- * Abstract class for instructions
+ * Abstract class for instructions, used to 
+ * describe instructions for the leonardo program.
  * @author Bergholm
  */
 abstract class Instruction {
@@ -22,6 +23,8 @@ abstract class Instruction {
 	public abstract String toString();
 }
 
+
+// Used for Instr1, instruction with one parameter
 class Instr1 extends Instruction {
 	int number;
 	public Instr1(Token t, int n) {
@@ -39,6 +42,7 @@ class Instr1 extends Instruction {
 	}
 }
 
+// Used for Instr2, instruction used for Up and Down.
 class Instr2 extends Instruction {
 	public Instr2(Token t) {
 		super(t);
@@ -50,6 +54,7 @@ class Instr2 extends Instruction {
 	}
 }
 
+// Used for Color.
 class Color extends Instruction {
 	String color;
 	public Color(Token t, String c) {
@@ -58,7 +63,7 @@ class Color extends Instruction {
 	}
 	
 	public String getColor() {
-		return color;
+		return color.toUpperCase();
 	}
 	
 	@Override
@@ -67,6 +72,8 @@ class Color extends Instruction {
 	}
 }
 
+// Used for reps with only one instruction, 
+// therefor a rep with no quotes.
 class Rep1 extends Instruction {
 	int number;
 	Instruction instruction;
@@ -90,6 +97,7 @@ class Rep1 extends Instruction {
 	}
 }
 
+// Used for rep with quotes.
 class Rep2 extends Instruction {
 	int number;
 	ArrayList <Instruction> i;

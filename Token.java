@@ -20,5 +20,5 @@ public class Token {
 }
 
 enum TokenType {
-	Number, C, Quote, End, Instr1, Instr2, Rep, Color, INVALID, WS, Comment, NL, EOF
+	Number, C, Quote, End, Instr1, Instr2, Rep, Color, INVALID, WS, Comment, NL
 }

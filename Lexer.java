@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 public class Lexer {
 	private ArrayList<Token> tokens;
 	private int currentToken;
-
+	
 	/**
 	 * Reads the input stream and builds a string of it.
 	 */
@@ -29,77 +29,89 @@ public class Lexer {
 		return buf.toString();
 	}
 
-
+	/**
+	 * Create the lexer and do convert the string into tokens.
+	 */
 	public Lexer(InputStream in) throws java.io.IOException, SyntaxError {
 	    String input = Lexer.readInput(in);
 		int line = 1; 
-		Pattern tokenPattern = Pattern.compile("\n|\t| |([Ff][Oo][Rr][Ww])|([Bb][Aa][Cc][Kk])|"
-				+ "([Ll][Ee][Ff][Tt])|([Rr][Ii][Gg][Hh][Tt])|([Uu][Pp])|([Dd][Oo][Ww][Nn])|"
-				+ "([Cc][Oo][Ll][Oo][Rr])|([Rr][Ee][Pp])|[0-9]+|([#][A-Fa-f0-9]{6})|"
-				+ "\"|\\.|[%].*");
+		
+		// Regex for valid cmds
+		String forw = "[Ff][Oo][Rr][Ww]";
+		String back = "[Bb][Aa][Cc][Kk]";
+		String left = "[Ll][Ee][Ff][Tt]";
+		String right = "[Rr][Ii][Gg][Hh][Tt]";
+		String color = "[Cc][Oo][Ll][Oo][Rr]";
+		String up = "[Uu][Pp]";
+		String down = "[Dd][Oo][Ww][Nn]";
+		String rep = "[Rr][Ee][Pp]";
+		String num = "[0-9]+";
+		String colortag = "[#][A-Fa-f0-9]{6}";
+		String quote = "\"";
+		String dot = "\\.";
+		String comment = "[%].*";
+		
+		Pattern tokenPattern = Pattern.compile("\n|\t| |"+ forw +"|"+ back +"|"+ right +"|"+ left +"|"
+				+ up +"|"+ down +"|"+ color +"|"+ rep +"|"+ num +"|"
+				+ colortag +"|"+ quote +"|"+ dot +"|"+ comment);
 		Matcher m = tokenPattern.matcher(input);
 		int inputPos = 0;
 		tokens = new ArrayList<Token>();
 		currentToken = 0;
-
+		
 		while (m.find()) {
-			// If the match not started where is should, set that data
-			// as INVALID token.
-			if (m.start() != inputPos)
-				tokens.add(new Token(TokenType.INVALID, "", line));
-			if (m.group().matches("\n")) {
-				tokens.add(new Token(TokenType.NL, "", line));
-				line ++;
-			}
-			else if (m.group().matches("[Ff][Oo][Rr][Ww]"))
-				tokens.add(new Token(TokenType.Instr1, "Forw", line));
-			else if (m.group().matches("[Bb][Aa][Cc][Kk]"))
-				tokens.add(new Token(TokenType.Instr1, "Back", line));
-			else if (m.group().matches("[Ll][Ee][Ff][Tt]"))
-				tokens.add(new Token(TokenType.Instr1, "Left", line));
-			else if (m.group().matches("[Rr][Ii][Gg][Hh][Tt]"))
-				tokens.add(new Token(TokenType.Instr1, "Right", line));
-			else if (m.group().matches("[Uu][Pp]"))
-				tokens.add(new Token(TokenType.Instr2, "Up", line));	
-			else if (m.group().matches("[Dd][Oo][Ww][Nn]"))
-				tokens.add(new Token(TokenType.Instr2, "Down", line));	
-			else if (m.group().matches("[Cc][Oo][Ll][Oo][Rr]"))
-				tokens.add(new Token(TokenType.Color, "Color", line));	
-			else if (m.group().matches("[Rr][Ee][Pp]"))
-				tokens.add(new Token(TokenType.Rep, "Rep", line));	
-			else if (Character.isDigit(m.group().charAt(0)))
-				tokens.add(new Token(TokenType.Number, Integer.parseInt(m.group()), line));
-			else if (m.group().matches("[#][A-Fa-f0-9]{6}"))
-				tokens.add(new Token(TokenType.C, m.group(), line));
-			else if (m.group().matches("\""))
-				tokens.add(new Token(TokenType.Quote, "\"", line));
-			else if (m.group().matches("\\."))
-				tokens.add(new Token(TokenType.End, ".", line));
-			else if (m.group().matches("\t"))
-				tokens.add(new Token(TokenType.WS, "", line));
-			else if (m.group().matches(" "))
-				tokens.add(new Token(TokenType.WS, "", line));
-			else if (m.group().matches("[%].*")) {}
-				//tokens.add(new Token(TokenType.Comment, "", line));
-			inputPos = m.end();
+		// Token don't match regex, set IVALID token.
+		if (m.start() != inputPos)
+			tokens.add(new Token(TokenType.INVALID, "", line));
+		if (m.group().matches("\n")) {
+			tokens.add(new Token(TokenType.NL, "", line));
+			line ++;
 		}
+		else if (m.group().matches(forw))
+			tokens.add(new Token(TokenType.Instr1, "Forw", line));
+		else if (m.group().matches(back))
+			tokens.add(new Token(TokenType.Instr1, "Back", line));
+		else if (m.group().matches(left))
+			tokens.add(new Token(TokenType.Instr1, "Left", line));
+		else if (m.group().matches(right))
+			tokens.add(new Token(TokenType.Instr1, "Right", line));
+		else if (m.group().matches(up))
+			tokens.add(new Token(TokenType.Instr2, "Up", line));	
+		else if (m.group().matches(down))
+			tokens.add(new Token(TokenType.Instr2, "Down", line));	
+		else if (m.group().matches(color))
+			tokens.add(new Token(TokenType.Color, "Color", line));	
+		else if (m.group().matches(rep))
+			tokens.add(new Token(TokenType.Rep, "Rep", line));	
+		else if (Character.isDigit(m.group().charAt(0)))
+			tokens.add(new Token(TokenType.Number, Integer.parseInt(m.group()), line));
+		else if (m.group().matches(colortag))
+			tokens.add(new Token(TokenType.C, m.group(), line));
+		else if (m.group().matches(quote))
+			tokens.add(new Token(TokenType.Quote, "\"", line));
+		else if (m.group().matches(dot))
+			tokens.add(new Token(TokenType.End, ".", line));
+		else if (m.group().matches("\t"))
+			tokens.add(new Token(TokenType.WS, "", line));
+		else if (m.group().matches(" "))
+			tokens.add(new Token(TokenType.WS, "", line));
+		else if (m.group().matches(comment)) {}
+		inputPos = m.end();
+		}
+		
 		// Check if there was any data left that not was a token.
 		// Then set it as INVALID token.
 		if (inputPos != input.length())
 			tokens.add(new Token(TokenType.INVALID, "", line));
+		// Removes unnecessary WS and NL tokens at end of list. 
 		if(!(tokens.isEmpty())) {
 			Token t = tokens.get(tokens.size()-1);
 			while(t.getType() == TokenType.NL || t.getType() == TokenType.WS) {
 				tokens.remove(tokens.size()-1);
-				if(tokens.isEmpty())
-					break;
+				if(tokens.isEmpty()) break;
 				t = tokens.get(tokens.size()-1);
-
 			}
 		}
-		for (Token token: tokens)
-		   System.out.println(token.getType());
-		//System.out.println("\nLines " +line);
 	}
 
 	/**
